@@ -106,10 +106,8 @@ class EnhancedTimer:
         '''
         Returns elapsed time from a running Timer
         '''
-        self._notify_others()
-        
         if self._running:
-            return time() - self._start_time
+            return (time() - self._start_time)
         else:
             return self._start_time
         

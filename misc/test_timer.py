@@ -32,8 +32,10 @@ def main():
     timer = EnhancedTimer(3.0, True)
     timer.start()
     timer.addEventHandler(timerTerminated, EventTimer.TERMINATED_EVENT)
-    
+    sleep(2)
+    print "Elapsed_time: %.2f " % (timer.elapsed_time)
     sleep(10)
+    
     timer.stop()
     
            

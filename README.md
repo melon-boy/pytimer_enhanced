@@ -1,119 +1,175 @@
-# The FFmpeg Python Wrapper
+# Enhanced Timer for Python
 
 
 
-This FFmpeg wrapper intends to be a flexible user-friendly wrapper. FFMpeg libraries have to be installed previously. You can download them from [FFmpeg](https://www.ffmpeg.org).
-The wrapper is based on the subprocess python base class to handle commands execution.
-
+This package intends to be a flexible user-friendly wrapper for the python timer. 
 
 
 ### Table of content
 
 - [Installation](##Installation)
+- [Documentation](##Documentation)
+- [API](##API)
 - [Examples](##Examples)
 
 
 
-## Installation 
+## Installation
 
 
-**ffmpeg_pywrapper** can be installed from one of the following methods:
+**pytimer_enhanced** can be installed from one of the following methods:
 
 ### From PIP:
 ```
-$>pip install ffmpeg_pywrapper
+$>pip install pytimer_enhanced
 ```
 
 ### From Pypi.python.org:
 
-* Download package from [ffmpeg_pywrapper](http://pypi.python.org/ffmpeg_pywrapper).
+* Download package from [pytimer_enhanced](http://pypi.python.org/pytimer_enhanced).
 * Uncompress it:
 	
-		$>tar zxvf ffmpeg_pywrapper-x.x.x.tar.gz
+		$>tar zxvf pytimer_enhanced-x.x.x.tar.gz
 		
 * Install:
 
-		$>cd ffmpeg_pywrapper
+		$>cd pytimer_enhanced
 		$>python setup.py install
+		
+### From Github repository [pytimer_enhanced](https://github.com/melon-boy/pytimer_enhanced):
+
+* Clone the git repository into the local filesystem:
+
+		$>git clone https://github.com/melon-boy/pytimer_enhanced
+
+* Change working directory to the project directory and run install script:
+
+		$>cd pytimer_enhanced
+		$>python setup.py install
+	
+## Documentation
+
+The **pytimer_enhanced** package gives the developper an interface to the native Python Timer from *threading* module. This implementation provides the next functionalities:
+
+* Create a single execution of a timer.
+* Create a repeated execution of a timer.
+* Start, stop or restart the current timer.
+* Access to its status.
+* Handle a terminated timer event.
+
+## API
+
+### Class EventTimer
+
+This class contains the events that can be handler.
+
+**TERMINATED_EVENT** - Event raised when timer is terminated.
+
+### Class TimerEnhanced
+
+This class contains the enhanced timer implementation. 
+
+#### Constructor
+
+*TimerEnhanced(timeout, repeat=False)*
+
+This constructor can take two arguments:
+
+* **timeout** - (Mandatory) - Timer time.
+* **repeat** - (Optional) - If True, tells timer to repeat indefinitly. This parameter is False by default.
+
+#### Properties
+
+* **status** - Returns True if timer is running. False otherwise.
+* **elapsed_time** - Returns the elapsed timer running time.
+* **terminated** - Returns True if timer has terminated. False otherwise.
+
+#### Public Methods
+
+*start()* - Starts the timer execution.
+
+*stop()* - Stops the timer execution.
+
+*restart()* - Restarts timer execution.
+
+#### Event Handlers
+
+*addEventHandler(notifier, event_type)* - register an event handler to a particular event.
+
+* **notifier** - Function to execute when event *event_type* raised.
+* **event_type** - Event to register.
+
+*removeEventHandler(notifier)* - unregister an event handler.
+
+* **notifier** - Function to be unregistered from the timer event handler system.
+
+*removeAllEventHandlers()* - unregister all event hanlders.
 
 ## Examples
 
-The following examples execute **ffmpeg** or **ffprobe** command synchonously. 
+### Example 1: Launching a one time timer
 
-### Example 1: retrieve of a ffprobe entry
+This example launch a timer of 2 seconds.
 
-	>>> from ffmpeg_pywrapper.ffprobe import FFprobe
-	>>> ff = FFprobe('input.mp4')
-	>>> print 'Duration (seconds): ' + str(ff.get_format_duration())
+	>>> from pytimer_enhanced.timer import EnhancedTimer
+	>>> t = EnhacedTimer(2.0)
+	>>> t.start()
 
-### Example 2: show all available entries from ffprobe
+### Example 2: Registering for the timer terminated event
 
-	>>> from ffmpeg_pywrapper.ffprobe import FFprobe
-	>>> ff = FFprobe(None)
-	>>> entries = ff.get_available_entries()
-	>>> print entries
+This exemple initialize a timer of 2 seconds and register the function *foo* to be executed when *TERMINATED* timer event raised.
+
+	>>> from pytimer_enhanced.timer import EnhancedTimer, EventTimer
+	>>> t = EnhacedTimer(2.0)
+	>>> t.addEventHandler(foo, EventTimer.TERMINATED_EVENT)
+
 	
-Every list element printed is composed by two strings separated by	two dots. The first one is the **ffprobe** entry, the second one is the wrapper function associated with the entry. See example 1 for the duration entry format.
-	
-### Example 3: convert video
+### Example 3: Getting timer status 
 
-	>>> from ffmpeg_pywrapper.ffmpeg import FFmpeg
-	>>> ff = FFmpeg('input.flv')
-	>>> ff.convert_to('output.mp4')
+	>>> from pytimer_enhanced.timer import EnhancedTimer, EventTimer
+	>>> t = EnhacedTimer(2.0)
+	>>> if t.status():
+	>>>	     print "Timer is running!"
+	>>> else:
+	>>>     print "Timer stopped." 
 
-Output format is calculated from from output file extension. So, in that case, the **FLV** video is going to be converted to an **MP4** video.
+### Example 4: Getting elapsed time
 
-### Example 4: convert video and audio
+	>>> from pytimer_enhanced.timer import EnhancedTimer, EventTimer
+	>>> t = EnhacedTimer(10.0)
+	>>> t.start()
+	>>>	print "Elapsed time: %.2f " % t.elapsed_time()     
 
-The use is the same as such of example 3. In adition, video codec and/or audio could be specified.
+### Example 4: Unregistering an event handler
 
-	>>> from ffmpeg_pywrapper.ffmpeg import FFmpeg
-	>>> ff = FFmpeg('input.flv')
-	>>> ff.convert_to('output.mp4', 'h264', 'aac)
-	
-That example converts the **FLV** container format to a specific video an audio codec passed as argument. In that case, we are going to convert video from **flv1** codec to **mp4** codec and audio from **mp3** codec to **aac** codec respectively.
+From the code of exemple 2, we can unregister an event handler as follows:
+
+	>>> t.removeEventHandler(foo)
+
+### Example 5: Launching a repeated timer
+
+This example launch a timer that executes every 2 seconds until it is programmatically stopped.
+
+	>>> from pytimer_enhanced.timer import EnhancedTimer
+	>>> t = EnhacedTimer(2.0, True)
+	>>> t.start()
+
+### Example 6: Stopping a timer
+
+From the code of exemple 5, we can stop a timer as follows:
+
+	>>> t.stop()
 
 
-### Example 4: split video into three chunks
+### Example 7: Restarting a timer
 
-	>>> from ffmpeg_pywrapper.ffmpeg import FFmpeg
-	>>> ff = FFmpeg('input.flv')
-	>>> ff.split(3)
-	
-The **ff.split(3)** call is going to create three parts of **input.flv** file automatically:
- 
-* part01.flv
-* part02.flv
-* part03.flv
+From the code of exemple 1, we can restart a timer as follows:
 
-The **split** method is going to calculate the every chunk duration from the total stream duration. So:
+	>>> t.restart()
 
-	chunk_duration = stream_duration / n_chunks
+## Credits
 
-### Example 5: merge three video chunks
+Developed with [Eclipse IDE](https://www.eclipse.org).
 
-Now, we could want to concatenate the three parts obtained from the exmaple 4. That can be realized by the next piece of code:
-
-	>>> from ffmpeg_pywrapper.ffmpeg import FFmpeg
-	>>> ff = FFmpeg(None)
-	>>> parts = ['part01.flv', 'part02.flv', 'part03.flv']
-	>>> output = 'concatenate.flv'
-	>>> ff.concatenate(parts, output)
-	
-Note that we can retrive the splitted files with the next command too:
-
-	>>> parts = sorted(fnmatch.filter(os.listdir('.'), 'part*.flv'))
-
-Such command is going to return a list with all files found into the actual directory ('.') that pass the filter. That means the files begin per **part** and finishes per **.flv**: **['part01.flv', 'part02.flv', 'part03.flv']**
-
-### Example 6: use of 'ffmpeg' wrapper as a command line
-
-A command line method is been created to allow the developer the flexibility on to **ffmpeg** command. That method is used right this:
-
-	>>> from ffmpeg_pywrapper.ffmpeg import FFmpeg
-	>>> ff = FFmpeg(None)
-	>>> options = '-v quiet -y -i input.flv -vcode h264 -acodec copy output.mp4'
-	>>> ff.command_line_execution(options)
-
-**options** can be anything you could pass to **ffmpeg** command.
+Marco Espinosa *(melon-boy)* © 2018 (themelonboy@themelonboy.com)
 
