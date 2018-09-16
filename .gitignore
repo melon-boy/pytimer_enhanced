@@ -1,0 +1,6 @@
+# Eclipse project files
+.pydevproject
+.project
+
+# Appel temp folders
+.DS_store
