@@ -9,11 +9,10 @@ Enhanced Timer python package
   
 '''
 
-
-
 from threading import Timer
 from time import sleep
 from time import time
+
 
 class EventTimer:
     '''
@@ -27,7 +26,7 @@ class EnhancedTimer:
     Timer class to handle an own implementation of a Python Timer
     '''
     
-    def __init__(self, seconds):
+    def __init__(self, seconds, repeat=False):
         '''
         Constructor
         '''
@@ -36,10 +35,11 @@ class EnhancedTimer:
         self._start_time = 0.0
         self._elapsed_time = 0.0
         self._terminated = False
+        self._repeat = repeat
         
         self.__configure_event_handlers()
     
-    ##  Public methods    
+    # #  Public methods    
         
     def start(self):
         '''
@@ -52,7 +52,6 @@ class EnhancedTimer:
             self._elapsed_time = 0.0
             self._terminated = False
             self._running = True
-            
         
     def stop(self):
         '''
@@ -61,8 +60,7 @@ class EnhancedTimer:
         if self._running:
             self._timer.cancel()
         
-        self.__terminated()
-        
+        self.__init_variables()
         
     def restart(self):
         '''
@@ -71,27 +69,25 @@ class EnhancedTimer:
         self.stop()
         sleep(1)
         self.start()
-     
     
-    ##  Event Handlers
+    # #  Event Handlers
     
-    def AddEventHandler(self, notifier, event_type):
+    def addEventHandler(self, notifier, event_type):
         '''
         Attach a function to callback for terminated notifications
         '''
         if event_type == EventTimer.TERMINATED_EVENT:
             self._terminated_event_handlers.add(notifier)
 
-    def RemoveEventHandler(self, notifier):
+    def removeEventHandler(self, notifier):
         '''
         Detach a function to callback for terminated notifications
         '''
         for handler in self._event_handlers:
             handler.discard(notifier)
             print "Event handler %s removed" % repr(notifier)
-            
 
-    def RemoveAllEventHandlers(self):
+    def removeAllEventHandlers(self):
         '''
         Detach all event handlers
         '''
@@ -99,7 +95,7 @@ class EnhancedTimer:
             print "Event handler %s removed" % repr(handler)
             handler = None
     
-    ##  Properties
+    # #  Properties
     
     @property    
     def status(self):
@@ -120,8 +116,6 @@ class EnhancedTimer:
         else:
             return self._start_time
         
-        
-        
     @property
     def terminated(self):
         '''
@@ -129,7 +123,7 @@ class EnhancedTimer:
         '''
         return self._terminated 
     
-    ##  Private methods
+    # #  Private methods
     
     def __configure_event_handlers(self):
         '''
@@ -139,24 +133,30 @@ class EnhancedTimer:
         self._event_handlers = []
         self._event_handlers.append(self._terminated_event_handlers)
         
-    def _notify_terminated(self):
+    def __notify_terminated(self):
         '''
         Launch terminated event to event handlers
         '''
         for notifier in self._terminated_event_handlers:
             notifier()
-            
- 
-    def __terminated(self):
+        
+    def __init_variables(self):
         '''
-        Reset variables and raise event to the observers
+        Variables initialization
         '''
         self._start_time = 0.0
         self._elapsed_time = 0.0
         self._running = False
-        self._terminated = True
         
-        self._notify_terminated()
- 
-
+    def __terminated(self):
+        '''
+        Function called when timer terminated event raised
+        '''
+        self._terminated = True
+        self.__init_variables()
+        self.__notify_terminated()
+        
+        if self._repeat:
+            # Restart timer
+            self.start()
 

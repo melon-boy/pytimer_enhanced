@@ -4,3 +4,9 @@
 
 # Appel temp folders
 .DS_store
+
+# Python compiled files
+*.pyc
+
+# Python compiled files
+*.pyc

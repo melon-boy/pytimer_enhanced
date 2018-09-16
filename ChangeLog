@@ -1,3 +1,8 @@
+2018.09.16
+
++ [timer] Added repeat functionality. New parameter at timer constructor. By default is False.
+
+
 initial version 2018.09.12
 
 - [timer] Created Enhanced Timer class.

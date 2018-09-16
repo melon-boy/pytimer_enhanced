@@ -9,62 +9,25 @@ Test for Enhanced Timer class
   
 '''
 
+from time import sleep
 from pytimer_enhanced.timer import EnhancedTimer, EventTimer
-from unittest import TestCase, main
 
-
-class TestTimer(TestCase):
+def timerTerminated():
     '''
-    Class to test enhanced timer functionalities
+    Function that executes at timer termination
     '''
-    def run(self):
-        '''
-        Execute all tests
-        '''
-        self.__testTerminatedEvent(4.0)
-        self.__testPropertiesTimer(4.0)
-
-    def __timerTerminated(self):
-        '''
-        Function that executes at timer termination
-        '''
-        print "Terminated OK"
-        
-    def __testTerminatedEvent(self,timeout):
-        '''
-        Test terminated event
-        '''
-        print "Test timer terminated event"
-        timer = EnhancedTimer(timeout)
-        self.assertTrue(timer)
-        
-        timer.start()
-        timer.AddEventHandler(self.__timerTerminated, EventTimer.TERMINATED_EVENT)
-        
-    def __testPropertiesTimer(self, timeout):
-        '''
-        Test properties
-        '''
-        print "Test timer properties"
-        timer = EnhancedTimer(timeout)
-        self.assertTrue(timer)
-        
-        status = timer.status
-        self.assertTrue(status)
-        
-        print "Status: %s" % (status)
-        
-        timer.start()
-        
-        status = timer.status
-        self.assertTrue(status)
-        
-        print "Status: %s" % (status)
-        
+    print "Terminated OK"        
     
 def main():
-    t = TestTimer
-    t.run()
+    
+    print "Test timer"
+    timer = EnhancedTimer(3.0, True)
+    timer.start()
+    timer.addEventHandler(timerTerminated, EventTimer.TERMINATED_EVENT)
+    
+    sleep(10)
+    timer.stop()
+    
            
 if __name__ == '__main__':
     main()
