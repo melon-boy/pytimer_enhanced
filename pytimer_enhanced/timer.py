@@ -46,11 +46,10 @@ class EnhancedTimer:
         Starts the timer with the constructor parameters
         '''
         if not self._running:
+            self.__init_variables()
             self._timer = Timer(self._seconds, self.__terminated)
             self._timer.start()
             self._start_time = time()
-            self._elapsed_time = 0.0
-            self._terminated = False
             self._running = True
         
     def stop(self):
@@ -85,14 +84,12 @@ class EnhancedTimer:
         '''
         for handler in self._event_handlers:
             handler.discard(notifier)
-            print "Event handler %s removed" % repr(notifier)
 
     def removeAllEventHandlers(self):
         '''
         Detach all event handlers
         '''
         for handler in self._event_handlers:
-            print "Event handler %s removed" % repr(handler)
             handler = None
     
     # #  Properties
@@ -147,13 +144,15 @@ class EnhancedTimer:
         self._start_time = 0.0
         self._elapsed_time = 0.0
         self._running = False
+        self._terminated = False
         
     def __terminated(self):
         '''
         Function called when timer terminated event raised
         '''
-        self._terminated = True
+        
         self.__init_variables()
+        self._terminated = True
         self.__notify_terminated()
         
         if self._repeat:
