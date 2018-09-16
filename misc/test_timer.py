@@ -9,8 +9,11 @@ Test for Enhanced Timer class
   
 '''
 
+import pytimer_enhanced.version
 from time import sleep
 from pytimer_enhanced.timer import EnhancedTimer, EventTimer
+
+
 
 def timerTerminated():
     '''
@@ -21,6 +24,11 @@ def timerTerminated():
 def main():
     
     print "Test timer"
+    print "========================================"
+    print "Version: %s" % (pytimer_enhanced.version.__version__)
+    print "Revision: %s" % (pytimer_enhanced.version.__revision__)
+    print "Author: %s" % (pytimer_enhanced.version.__author__)
+    print "========================================"
     timer = EnhancedTimer(3.0, True)
     timer.start()
     timer.addEventHandler(timerTerminated, EventTimer.TERMINATED_EVENT)
