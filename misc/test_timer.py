@@ -10,27 +10,64 @@ Test for Enhanced Timer class
 '''
 
 from pytimer_enhanced.timer import EnhancedTimer, EventTimer
-from time import sleep
+from unittest import TestCase, main
 
-def timerTerminated():
-    print "Terminated"
 
-def otherfunc():
-    print "Time elapsed demanded!"
+class TestTimer(TestCase):
+    '''
+    Class to test enhanced timer functionalities
+    '''
+    def run(self):
+        '''
+        Execute all tests
+        '''
+        self.__testTerminatedEvent(4.0)
+        self.__testPropertiesTimer(4.0)
+
+    def __timerTerminated(self):
+        '''
+        Function that executes at timer termination
+        '''
+        print "Terminated OK"
+        
+    def __testTerminatedEvent(self,timeout):
+        '''
+        Test terminated event
+        '''
+        print "Test timer terminated event"
+        timer = EnhancedTimer(timeout)
+        self.assertTrue(timer)
+        
+        timer.start()
+        timer.AddEventHandler(self.__timerTerminated, EventTimer.TERMINATED_EVENT)
+        
+    def __testPropertiesTimer(self, timeout):
+        '''
+        Test properties
+        '''
+        print "Test timer properties"
+        timer = EnhancedTimer(timeout)
+        self.assertTrue(timer)
+        
+        status = timer.status
+        self.assertTrue(status)
+        
+        print "Status: %s" % (status)
+        
+        timer.start()
+        
+        status = timer.status
+        self.assertTrue(status)
+        
+        print "Status: %s" % (status)
+        
     
 def main():
-    
-    print "Test for own Timer"
-    t = EnhancedTimer(3.0)
-    t.start()
-    t.AddEventHandler(timerTerminated, EventTimer.TERMINATED_EVENT)
-    
-    
-    sleep(1)
-    print "Elapsed time: %.0f" % t.elapsed_time
-    t.RemoveEventHandler(timerTerminated)
-    t.RemoveAllEventHandlers()
-    
-    
+    t = TestTimer
+    t.run()
+           
 if __name__ == '__main__':
     main()
+    
+
+
