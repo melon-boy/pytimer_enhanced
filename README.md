@@ -171,5 +171,5 @@ From the code of exemple 1, we can restart a timer as follows:
 
 Developed with [Eclipse IDE](https://www.eclipse.org).
 
-Marco Espinosa *(melon-boy)* © 2018 (themelonboy@themelonboy.com)
+Marco Espinosa *(melon-boy)* © 2018 (hi@marcoespinosa.es)
 
